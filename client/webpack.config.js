@@ -14,6 +14,7 @@ module.exports = (env) => {
   });
 
   return {
+    target: "web",
     mode: PRODUCTION ? "production" : "development",
     output: {
       path: path.resolve(__dirname, "dist"),
