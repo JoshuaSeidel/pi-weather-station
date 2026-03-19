@@ -50,6 +50,7 @@ module.exports = (env) => {
               options: {
                 sourceMap: !PRODUCTION,
                 modules: {
+                  mode: "local",
                   exportLocalsConvention: "camelCase",
                   localIdentName: "[path][name]__[local]--[hash:base64:5]",
                 },
