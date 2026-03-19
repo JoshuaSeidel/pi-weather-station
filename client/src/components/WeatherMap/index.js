@@ -9,7 +9,6 @@ import { Map, TileLayer, AttributionControl, Marker } from "react-leaflet";
 import PropTypes from "prop-types";
 import { AppContext } from "~/AppContext";
 import debounce from "debounce";
-import axios from "axios";
 import styles from "./styles.css";
 
 /**
@@ -30,6 +29,7 @@ const WeatherMap = ({ zoom, dark }) => {
     mapGeo,
     mapApiKey,
     getMapApiKey,
+    weatherApiKey,
     markerIsVisible,
     animateWeatherMap,
   } = useContext(AppContext);
@@ -149,15 +149,13 @@ const WeatherMap = ({ zoom, dark }) => {
         }/tiles/{z}/{x}/{y}?access_token={apiKey}`}
         apiKey={mapApiKey}
       />
-      {mapTimestamp ? (
+      {mapTimestamp && weatherApiKey ? (
         <TileLayer
-          attribution='<a href="https://www.rainviewer.com/">RainViewer</a>'
-          url={`https://tilecache.rainviewer.com/v2/radar/${mapTimestamp}/{size}/{z}/{x}/{y}/{color}/{smooth}_{snow}.png`}
+          attribution='&copy; <a href="https://www.tomorrow.io/weather-api">Tomorrow.io</a>'
+          url={`https://api.tomorrow.io/v4/map/tile/{z}/{x}/{y}/precipitationIntensity/${mapTimestamp}.png?apikey=${weatherApiKey}`}
           opacity={0.3}
-          size={512}
-          color={6} // https://www.rainviewer.com/api.html#colorSchemes
-          smooth={1}
-          snow={1}
+          maxZoom={12}
+          key={mapTimestamp}
         />
       ) : null}
       {markerIsVisible && markerPosition ? (
@@ -173,29 +171,6 @@ WeatherMap.propTypes = {
 };
 
 /**
- * Weather layer
- *
- * @param {Object} props
- * @param {String} props.layer
- * @param {String} props.weatherApiKey
- * @returns {JSX.Element} Weather layer
- */
-const WeatherLayer = ({ layer, weatherApiKey }) => {
-  return (
-    <TileLayer
-      attribution='&amp;copy <a href="https://openweathermap.org/">OpenWeather</a>'
-      url={`https://tile.openweathermap.org/map/${layer}/{z}/{x}/{y}.png?appid=${weatherApiKey}`}
-      apiKey
-    />
-  );
-};
-
-WeatherLayer.propTypes = {
-  layer: PropTypes.string.isRequired,
-  weatherApiKey: PropTypes.string,
-};
-
-/**
  * Determines if truthy, but returns true for 0
  *
  * @param {*} i
@@ -206,21 +181,30 @@ function hasVal(i) {
 }
 
 /**
+ * Generate timestamps for weather map animation
+ *
+ * @param {Number} hoursBack number of hours to go back
+ * @returns {Array} array of ISO timestamp strings
+ */
+function generateMapTimestamps(hoursBack = 6) {
+  const timestamps = [];
+  const now = new Date();
+  now.setMinutes(0, 0, 0);
+
+  for (let i = hoursBack; i >= 0; i--) {
+    const ts = new Date(now.getTime() - i * 60 * 60 * 1000);
+    timestamps.push(ts.toISOString());
+  }
+  return timestamps;
+}
+
+/**
  * Get timestamps for weather map
  *
  * @returns {Promise} Promise of timestamps
  */
 function getMapTimestamps() {
-  return new Promise((resolve, reject) => {
-    axios
-      .get("https://api.rainviewer.com/public/maps.json")
-      .then((res) => {
-        resolve(res.data);
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
+  return Promise.resolve(generateMapTimestamps(6));
 }
 
 export default WeatherMap;

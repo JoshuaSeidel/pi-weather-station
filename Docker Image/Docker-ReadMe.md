@@ -10,7 +10,7 @@ Eric developed this application as a weather station running on RaspberryPI on t
 
 ![Pi Weather Station ](https://user-images.githubusercontent.com/15202038/91359998-4625bb80-e7bb-11ea-937e-c87eede41f35.JPG)
 
-Compiled app data to run as a lightweight container in docker. Uses Node:12.12-alpine.
+Compiled app data to run as a lightweight container in docker. Uses Node:18-alpine.
 
 Images will work on ARM/aarch64 and x86 Linux/AMD infrastructure. 
 

@@ -1,37 +1,38 @@
 {
-  "parser": "babel-eslint",
+  "parser": "@babel/eslint-parser",
   "parserOptions": {
     "ecmaVersion": 9,
     "sourceType": "module",
     "ecmaFeatures": {
       "jsx": true
-    }
+    },
+    "requireConfigFile": true
   },
   "globals": {
     "Atomics": "readonly",
     "SharedArrayBuffer": "readonly"
   },
-  "rules": {    
+  "rules": {
     "react/jsx-uses-react": 1,
-    "babel/semi": 1,
-    "babel/camelcase": 1,
-    "no-useless-return": 2,   
-    "no-self-compare": 2,      
+    "semi": 1,
+    "camelcase": 1,
+    "no-useless-return": 2,
+    "no-self-compare": 2,
     "no-implicit-globals" : 2,
     "no-eval": 2,
-    "no-alert": 2,    
+    "no-alert": 2,
     "no-multiple-empty-lines" : 1,
     "no-empty-function": 2,
-    "guard-for-in": 2,       
-    "babel/no-unused-expressions": 2,
+    "guard-for-in": 2,
+    "no-unused-expressions": 2,
     "jsx-quotes" : ["warn", "prefer-double"],
-    "comma-spacing" : 1,       
-    "arrow-spacing": 1,    
+    "comma-spacing" : 1,
+    "arrow-spacing": 1,
     "prefer-destructuring" : 1,
     "multiline-comment-style" : 0,
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
-    "react/display-name": 0,    
+    "react/display-name": 0,
     "eslint-comments/no-unused-disable": 1,
     "eslint-comments/disable-enable-pair": 0,
     "react/no-unused-prop-types": 2,
@@ -62,7 +63,6 @@
     "plugin:jsdoc/recommended"
   ],
   "plugins": [
-    "babel",
     "react-hooks",
     "react",
     "jsdoc"

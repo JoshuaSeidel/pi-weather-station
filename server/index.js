@@ -18,7 +18,7 @@ const {
 } = settingsCtrl;
 const { getCoords } = geolocationCtrl;
 
-const DIST_DIR = "/../client/dist";
+const DIST_DIR = "/public";
 const PORT = 8080;
 const app = express();
 

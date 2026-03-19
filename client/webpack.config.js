@@ -1,6 +1,7 @@
 const path = require("path");
 const webpack = require("webpack");
 const HtmlWebPackPlugin = require("html-webpack-plugin");
+const ESLintPlugin = require("eslint-webpack-plugin");
 
 module.exports = (env) => {
   const PRODUCTION = !!(env && env.BUILD_PRODUCTION);
@@ -13,22 +14,15 @@ module.exports = (env) => {
   });
 
   return {
+    mode: PRODUCTION ? "production" : "development",
     output: {
       path: path.resolve(__dirname, "dist"),
       filename: "bundle.min.js",
       publicPath: "/",
+      clean: true,
     },
     module: {
       rules: [
-        {
-          enforce: "pre",
-          test: /\.js$/,
-          include: [path.resolve(__dirname, "src")],
-          exclude: /node_modules/,
-          use: {
-            loader: "eslint-loader"
-          }
-        },        
         {
           test: /\.(js|jsx)$/,
           include: [path.resolve(__dirname, "src")],
@@ -42,6 +36,7 @@ module.exports = (env) => {
           use: [
             {
               loader: "html-loader",
+              options: { esModule: false },
             },
           ],
         },
@@ -64,32 +59,26 @@ module.exports = (env) => {
         },
         {
           test: /\.(png|svg|jpg|gif)$/,
-          use: [
-            {
-              loader: "url-loader",
-              options: {
-                limit: 8192,
-                sourceMap: !PRODUCTION,
-                name: PRODUCTION
-                ? "[contenthash].[ext]"
-                : "[path][name].[ext]?[contenthash]"                
-              },
+          type: "asset",
+          parser: {
+            dataUrlCondition: {
+              maxSize: 8192,
             },
-          ],
+          },
+          generator: {
+            filename: PRODUCTION
+              ? "[contenthash][ext]"
+              : "[path][name][ext]?[contenthash]",
+          },
         },
         {
           test: /\.(woff|woff2|eot|ttf|otf)$/,
-          use: [
-            {
-              loader: "file-loader",
-              options: {
-                sourceMap: !PRODUCTION,
-                name: PRODUCTION
-                  ? "[contenthash].[ext]"
-                  : "[path][name].[ext]?[contenthash]"
-              },
-            },
-          ],
+          type: "asset/resource",
+          generator: {
+            filename: PRODUCTION
+              ? "[contenthash][ext]"
+              : "[path][name][ext]?[contenthash]",
+          },
         },
       ],
     },
@@ -103,11 +92,17 @@ module.exports = (env) => {
       new HtmlWebPackPlugin({
         template: "./src/index.html",
         filename: "./index.html",
+        inject: true,
       }),
       definePlugin,
+      new ESLintPlugin({
+        extensions: ["js", "jsx"],
+        context: path.resolve(__dirname, "src"),
+        exclude: ["node_modules"],
+      }),
     ],
     watchOptions: {
-      ignored: /node_modules/
-    }
+      ignored: /node_modules/,
+    },
   };
 };
